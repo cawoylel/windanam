@@ -1,2 +1,2 @@
 # winndam
-A multi-dialectal speech recognition model for Fula varieties
+A multi-dialectal speech recognition models for Fula varieties
