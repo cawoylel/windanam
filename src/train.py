@@ -516,8 +516,8 @@ def main():
     # max_input_length
     def is_audio_in_length_range(length):
         return length > min_input_length and length < max_input_length
-    def is_text_in_length_range(ids):
-        return length <= len(ids)
+    def is_text_in_length_range(length):
+        return length <= 448
 
     vectorized_datasets = vectorized_datasets.filter(
         is_audio_in_length_range,
