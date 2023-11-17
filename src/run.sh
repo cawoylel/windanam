@@ -1,22 +1,22 @@
 torchrun \
  	--nproc_per_node 4 src/train.py \
-	--model_name_or_path="openai/whisper-large-V3" \
+	--model_name_or_path="openai/whisper-large-v3" \
 	--dataset_name="cawoylel/FulaSpeechCorpora-splited-noise_augmented" \
 	--tts_dataset="cawoylel/FulaNewsTextCorporaTTS" \
 	--language="hausa" \
-	--train_split_name="test" \
+	--train_split_name="train+test" \
 	--eval_split_name="dev" \
 	--num_train_epochs="1" \
-	--output_dir="./whisper-large_v3-tts" \
-	--per_device_train_batch_size="16" \
-	--per_device_eval_batch_size="16" \
+	--output_dir="./whisper-large-tts" \
+	--per_device_train_batch_size="8" \
+	--per_device_eval_batch_size="8" \
 	--logging_steps="100" \
 	--learning_rate="1e-5" \
 	--warmup_steps="500" \
 	--evaluation_strategy="steps" \
-	--eval_steps="1000" \
+	--eval_steps="2000" \
 	--save_strategy="steps" \
-	--save_steps="1000" \
+	--save_steps="2000" \
 	--generation_max_length="64" \
 	--preprocessing_num_workers="8" \
 	--length_column_name="input_length" \
