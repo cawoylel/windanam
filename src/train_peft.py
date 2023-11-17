@@ -42,10 +42,22 @@ from transformers import (
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
     set_seed,
+
 )
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 from transformers.utils import check_min_version, send_example_telemetry
 from transformers.utils.versions import require_version
+
+from peft import prepare_model_for_kbit_training
+from peft import LoraConfig, PeftModel, LoraModel, LoraConfig, get_peft_model
+
+from transformers import TrainerCallback, TrainerState, TrainerControl
+from transformers.trainer_utils import PREFIX_CHECKPOINT_DIR
+
+
+MODEL_NAME_OR_PATH = "openai/whisper-large-v3"
+TASK = "transcribe"
+LANGUAGE = "hausa"
 
 
 # Will error if the minimal version of Transformers is not installed. Remove at your own risks.
@@ -54,7 +66,6 @@ check_min_version("4.36.0.dev0")
 require_version("datasets>=1.18.0", "To fix: pip install -r examples/pytorch/speech-recognition/requirements.txt")
 
 logger = logging.getLogger(__name__)
-
 
 @dataclass
 class ModelArguments:
@@ -283,6 +294,24 @@ class DataCollatorSpeechSeq2SeqWithPadding:
 
         return batch
 
+class SavePeftModelCallback(TrainerCallback):
+    def on_save(
+        self,
+        args: Seq2SeqTrainingArguments,
+        state: TrainerState,
+        control: TrainerControl,
+        **kwargs,
+    ):
+        checkpoint_folder = os.path.join(args.output_dir, f"{PREFIX_CHECKPOINT_DIR}-{state.global_step}")
+
+        peft_model_path = os.path.join(checkpoint_folder, "adapter_model")
+        kwargs["model"].save_pretrained(peft_model_path)
+
+        pytorch_model_path = os.path.join(checkpoint_folder, "pytorch_model.bin")
+        if os.path.exists(pytorch_model_path):
+            os.remove(pytorch_model_path)
+        return control
+
 
 def main():
     # 1. Parse input arguments
@@ -373,8 +402,8 @@ def main():
                 split="train",
                 cache_dir=model_args.cache_dir,
                 token=model_args.token,
-                )
-            raw_datasets["train"] = concatenate_datasets([raw_datasets["train"], tts_dataset])
+        )
+        raw_datasets["train"] = concatenate_datasets([raw_datasets["train"], tts_dataset])
         raw_datasets["train"] = raw_datasets["train"].shuffle(seed=10)
 
 
@@ -576,6 +605,18 @@ def main():
         forward_attention_mask=forward_attention_mask,
     )
 
+    model = prepare_model_for_kbit_training(model)
+
+    def make_inputs_require_grad(module, input, output):
+        output.requires_grad_(True)
+
+    model.model.encoder.conv1.register_forward_hook(make_inputs_require_grad)
+    
+    config = LoraConfig(r=32, lora_alpha=64, target_modules=["q_proj", "v_proj"], lora_dropout=0.05, bias="none")
+    model = get_peft_model(model, config)
+    model.print_trainable_parameters()
+    model.config.use_cache = False
+
     # 11. Initialize Trainer
     trainer = Seq2SeqTrainer(
         model=model,
@@ -585,6 +626,7 @@ def main():
         tokenizer=feature_extractor,
         data_collator=data_collator,
         compute_metrics=compute_metrics if training_args.predict_with_generate else None,
+        callbacks=[SavePeftModelCallback]
     )
 
     # 12. Training
