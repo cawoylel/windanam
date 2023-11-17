@@ -1,15 +1,15 @@
-python src/train.py \
+torchrun \
+ 	--nproc_per_node 2 src/train.py \
 	--model_name_or_path="openai/whisper-large-v3" \
 	--dataset_name="cawoylel/FulaSpeechCorpora-splited-noise_augmented" \
 	--tts_dataset="cawoylel/FulaNewsTextCorporaTTS" \
-	--resume_from_checkpoint="whisper-medium-tts/checkpoint-4000" \
 	--language="hausa" \
 	--train_split_name="train+test" \
 	--eval_split_name="dev" \
 	--max_steps="10000" \
-	--output_dir="./whisper-medium-tts" \
-	--per_device_train_batch_size="16" \
-	--per_device_eval_batch_size="16" \
+	--output_dir="./whisper-large-tts" \
+	--per_device_train_batch_size="8" \
+	--per_device_eval_batch_size="8" \
 	--logging_steps="100" \
 	--learning_rate="1e-5" \
 	--warmup_steps="500" \
