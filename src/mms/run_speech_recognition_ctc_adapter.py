@@ -692,13 +692,13 @@ def main():
     text_column_name = data_args.text_column_name
     do_lower_case = data_args.do_lower_case
 
-    def remove_adamawa(dialect):
-        return dialect != "adamawa"
+    # def remove_adamawa(dialect):
+    #     return dialect != "adamawa"
 
     def is_not_empty(transcription):
         return len(transcription) > 1
     
-    raw_datasets = raw_datasets.filter(remove_adamawa, num_proc=num_workers, input_columns=["dialect"])
+    #raw_datasets = raw_datasets.filter(remove_adamawa, num_proc=num_workers, input_columns=["dialect"])
     raw_datasets = raw_datasets.filter(is_not_empty, num_proc=num_workers, input_columns=[text_column_name])
 
     def prepare_dataset(batch):
