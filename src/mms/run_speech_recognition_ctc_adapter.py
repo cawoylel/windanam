@@ -141,10 +141,6 @@ class DataTrainingArguments:
         metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
     )
 
-    tts_dataset: str = field(
-        default=None, metadata={"help": "The name of the dataset to use (via the datasets library) for the TTS data augmentation."}
-    )
-
     target_language: Optional[str] = field(
         metadata={
             "help": (
@@ -156,6 +152,10 @@ class DataTrainingArguments:
             )
         },
     )
+    tts_dataset: str = field(
+        default=None, metadata={"help": "The name of the dataset to use (via the datasets library) for the TTS data augmentation."}
+    )
+
     dataset_config_name: str = field(
         default=None, metadata={"help": "The configuration name of the dataset to use (via the datasets library)."}
     )
@@ -476,14 +476,14 @@ def main():
             data_args.dataset_config_name,
             split=data_args.train_split_name,
             cache_dir=f"./{data_args.dataset_name.split('/')[-1]}",
-            token=model_args.token,
+            token=data_args.token,
         )
         if data_args.tts_dataset is not None:
             tts_dataset = load_dataset(
                 data_args.tts_dataset,
                 split="train",
                 cache_dir=f"./{data_args.tts_dataset.split('/')[-1]}",
-                token=model_args.token,
+                token=data_args.token,
                 )
             raw_datasets["train"] = concatenate_datasets([raw_datasets["train"], tts_dataset])
 
@@ -512,7 +512,7 @@ def main():
             data_args.dataset_config_name,
             split=data_args.eval_split_name,
             cache_dir=f"./{data_args.dataset_name.split('/')[-1]}",
-            token=model_args.token,
+            token=data_args.token,
         )
 
         if data_args.max_eval_samples is not None:
