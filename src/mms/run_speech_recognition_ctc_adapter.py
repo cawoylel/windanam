@@ -475,14 +475,14 @@ def main():
             data_args.dataset_name,
             data_args.dataset_config_name,
             split=data_args.train_split_name,
-            cache_dir=f"./{data_args.dataset_name.split('/')[-1]}",
+            cache_dir=model_args.cache_dir,
             token=data_args.token,
         )
         if data_args.tts_dataset is not None:
             tts_dataset = load_dataset(
                 data_args.tts_dataset,
                 split="train",
-                cache_dir=f"./{data_args.tts_dataset.split('/')[-1]}",
+                cache_dir=model_args.cache_dir,
                 token=data_args.token,
                 )
             raw_datasets["train"] = concatenate_datasets([raw_datasets["train"], tts_dataset])
@@ -511,7 +511,7 @@ def main():
             data_args.dataset_name,
             data_args.dataset_config_name,
             split=data_args.eval_split_name,
-            cache_dir=f"./{data_args.dataset_name.split('/')[-1]}",
+            cache_dir=model_args.cache_dir,
             token=data_args.token,
         )
 
