@@ -384,27 +384,37 @@ def create_vocabulary_from_data(
     vocab_list  = list(set(vocabs["train"]["vocab"][0]) | set(vocabs["eval"]["vocab"][0]))
 
     vocab_dict = {v: k for k, v in enumerate(sorted(vocab_list))}
+    special_tokens = {}
 
     # replace white space with delimiter token
     if word_delimiter_token is not None:
         vocab_dict[word_delimiter_token] = vocab_dict[" "]
+        special_tokens[word_delimiter_token] = 4
         del vocab_dict[" "]
 
     # add unk and pad token
-    if unk_token is not None:
-        vocab_dict[unk_token] = len(vocab_dict)
 
     if pad_token is not None:
         vocab_dict[pad_token] = len(vocab_dict)
+        special_tokens[pad_token] = 0
+
+    if unk_token is not None:
+        vocab_dict[unk_token] = len(vocab_dict)
+        special_tokens[unk_token] = 3
 
     # add bos and eos token
     if bos_token is not None:
         vocab_dict[bos_token] = len(vocab_dict)
+        special_tokens[bos_token] = 1
 
     if eos_token is not None:
         vocab_dict[eos_token] = len(vocab_dict)
-
-    return vocab_dict
+        special_tokens[eos_token] = 2
+    
+    for key, value in vocab_dict.items():
+        if key not in special_tokens.keys():
+            special_tokens[key] = 5 + value
+    return special_tokens
 
 def main():
     # Parse input arguments
@@ -517,6 +527,22 @@ def main():
 
         if data_args.max_eval_samples is not None:
             raw_datasets["eval"] = raw_datasets["eval"].select(range(data_args.max_eval_samples))
+
+    chars_to_ignore_regex = '[\,\?\.\!\-\;\:\"\“\%\‘\”\�]'
+    text_column_name = data_args.text_column_name
+
+    def remove_special_characters(batch):
+        if chars_to_ignore_regex is not None:
+            batch[text_column_name] = re.sub(chars_to_ignore_regex, "", batch[text_column_name]).lower() + " "
+        else:
+            batch[text_column_name] = batch[text_column_name].lower() + " "
+        return batch
+
+    with training_args.main_process_first(desc="dataset map special characters removal"):
+        raw_datasets = raw_datasets.map(
+            remove_special_characters,
+            desc="remove special characters from datasets",
+        )
 
 
 
@@ -689,7 +715,6 @@ def main():
     audio_column_name = data_args.audio_column_name
     num_workers = data_args.preprocessing_num_workers
 
-    text_column_name = data_args.text_column_name
     do_lower_case = data_args.do_lower_case
 
     # def remove_adamawa(dialect):
