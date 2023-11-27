@@ -528,7 +528,7 @@ def main():
         if data_args.max_eval_samples is not None:
             raw_datasets["eval"] = raw_datasets["eval"].select(range(data_args.max_eval_samples))
 
-    chars_to_ignore_regex = '[\,\?\.\!\-\;\:\"\“\%\‘\”\�]'
+    chars_to_ignore_regex = '[\,\?\=\!\-\;\:\"\“\%\‘\”\�\…\‹\›\@]'
     text_column_name = data_args.text_column_name
 
     def remove_special_characters(batch):

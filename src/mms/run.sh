@@ -2,18 +2,20 @@ python run_speech_recognition_ctc_adapter.py \
 	--model_name_or_path="facebook/mms-1b-all" \
 	--dataset_name="cawoylel/FulaSpeechCorpora-splited-noise_augmented" \
     --tts_dataset="cawoylel/FulaNewsTextCorporaTTS" \
-	--max_steps="10000" \
+	--max_steps="40000" \
 	--output_dir="./mms-1b-tts" \
+	--train_split_name="train+test" \
+	--eval_split_name="dev" \
 	--per_device_train_batch_size="16" \
     --per_device_eval_batch_size="8" \
 	--logging_steps="100" \
 	--learning_rate="1e-5" \
 	--warmup_steps="500" \
 	--evaluation_strategy="steps" \
-	--eval_steps="1000" \
+	--eval_steps="2000" \
 	--save_strategy="steps" \
-	--save_steps="500" \
-    --preprocessing_num_workers="4" \
+	--save_steps="1000" \
+    --preprocessing_num_workers="24" \
     --hub_model_id="cawoylel/windanam_mms-1b-tts-all" \
     --hub_strategy="every_save" \
 	--gradient_checkpointing \
