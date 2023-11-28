@@ -16,6 +16,96 @@
 
 """ Fine-tuning a 🤗 Transformers CTC adapter model for automatic speech recognition"""
 
+vocab_test = {
+"ful": {
+    "!": 58,
+    "$": 55,
+    "%": 56,
+    "&": 71,
+    "'": 35,
+    "+": 69,
+    ",": 44,
+    "-": 37,
+    ".": 33,
+    "/": 53,
+    "0": 30,
+    "1": 32,
+    "2": 36,
+    "3": 41,
+    "4": 40,
+    "5": 39,
+    "6": 42,
+    "7": 46,
+    "8": 43,
+    "9": 38,
+    ":": 49,
+    ";": 51,
+    "</s>": 2,
+    "<pad>": 0,
+    "<s>": 1,
+    "<unk>": 3,
+    "?": 54,
+    "[": 66,
+    "]": 67,
+    "_": 81,
+    "`": 52,
+    "a": 5,
+    "b": 14,
+    "c": 28,
+    "d": 10,
+    "e": 6,
+    "f": 24,
+    "g": 20,
+    "h": 17,
+    "i": 7,
+    "j": 19,
+    "k": 18,
+    "l": 16,
+    "m": 12,
+    "n": 9,
+    "o": 8,
+    "p": 27,
+    "q": 45,
+    "r": 15,
+    "s": 22,
+    "t": 13,
+    "u": 11,
+    "v": 29,
+    "w": 21,
+    "x": 48,
+    "y": 23,
+    "z": 34,
+    "|": 4,
+    "£": 72,
+    "¥": 75,
+    "ñ": 80,
+    "×": 64,
+    "á": 63,
+    "ã": 65,
+    "ç": 73,
+    "è": 76,
+    "é": 60,
+    "í": 70,
+    "ó": 78,
+    "õ": 62,
+    "ú": 82,
+    "ü": 59,
+    "ı": 68,
+    "ŋ": 77,
+    "ş": 74,
+    "ƴ": 79,
+    "ɓ": 26,
+    "ɗ": 25,
+    "ɲ": 83,
+    "‐": 84,
+    "–": 57,
+    "—": 61,
+    "‘": 50,
+    "’": 31,
+    "”": 47
+  }
+}
+
 import functools
 import json
 import logging
@@ -538,11 +628,11 @@ def main():
             batch[text_column_name] = batch[text_column_name].lower() + " "
         return batch
 
-    with training_args.main_process_first(desc="dataset map special characters removal"):
-        raw_datasets = raw_datasets.map(
-            remove_special_characters,
-            desc="remove special characters from datasets",
-        )
+    # with training_args.main_process_first(desc="dataset map special characters removal"):
+    #     raw_datasets = raw_datasets.map(
+    #         remove_special_characters,
+    #         desc="remove special characters from datasets",
+    #     )
 
 
 
@@ -625,7 +715,7 @@ def main():
 
                 # save vocab dict to be loaded into tokenizer
                 with open(vocab_file, "w") as file:
-                    json.dump(vocab_dict, file, ensure_ascii=False)
+                    json.dump(vocab_test, file, ensure_ascii=False)
 
         # if tokenizer has just been created
         # it is defined by `tokenizer_class` if present in config else by `model_type`
