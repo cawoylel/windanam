@@ -655,6 +655,11 @@ def main():
     # `phoneme_language` is only relevant if the model is fine-tuned on phoneme classification
     phoneme_language = data_args.phoneme_language
 
+    def is_not_empty(transcription):
+        return len(transcription) > 1
+
+    raw_datasets = raw_datasets.filter(is_not_empty, num_proc=num_workers, input_columns=[text_column_name])
+
     # Preprocessing the datasets.
     # We need to read the audio files as arrays and tokenize the targets.
     def prepare_dataset(batch):
