@@ -26,7 +26,7 @@ pip install --editable ./
 python fairseq/examples/wav2vec/wav2vec_manifest.py $AUDIO_FOLDER --dest prepared --ext wav --valid-percent 0.1
 ```
 
-Where ``$AUDIO_FOLDER`` is the folder containing the audio files. The audios have to be sampled to 16k and must contain only a single channel.
+Where ``$AUDIO_FOLDER`` is the folder containing the wav audio files. The audios have to be sampled to 16k and must contain only a single channel.
 
 #### Run the continue pretraining
 
