@@ -1,4 +1,4 @@
-!fairseq-hydra-train \
+fairseq-hydra-train \
     checkpoint.restore_file=base_1b.pt \
     checkpoint.reset_dataloader=True \
     checkpoint.reset_lr_scheduler=True \
