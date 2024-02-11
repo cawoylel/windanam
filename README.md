@@ -7,9 +7,16 @@ This repo contains code to train OpenAI whisper and Meta MMS models on fula lang
 
 #### Download the model
 
+For downloading the large model:
 ```shell
 wget https://dl.fbaipublicfiles.com/mms/pretraining/base_1b.pt
 ```
+
+For downloading the base model:
+```shell
+wget https://dl.fbaipublicfiles.com/mms/pretraining/base_300m.pt
+```
+
 
 #### Install fairseq
 
@@ -30,6 +37,7 @@ Where ``$AUDIO_FOLDER`` is the folder containing the wav audio files. The audios
 
 #### Run the continue pretraining
 
+For the base mms 300m:
 ```shell
 sh src/mms/continue_pretraining.sh
 ```
