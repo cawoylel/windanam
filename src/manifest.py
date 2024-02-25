@@ -10,6 +10,7 @@ Data pre-processing: build vocabularies and binarize training data.
 import argparse
 import glob
 import os
+import subprocess
 import random
 from tqdm import tqdm
 import soundfile
@@ -22,7 +23,7 @@ def get_parser():
     )
     parser.add_argument(
         "--valid-percent",
-        default=0.01,
+        default=0.1,
         type=float,
         metavar="D",
         help="percentage of data to use as validation set (between 0 and 1)",
@@ -72,12 +73,18 @@ def main(args):
             if args.path_must_contain and args.path_must_contain not in file_path:
                 continue
             try:
-                frames = soundfile.info(fname).frames
+                info = soundfile.info(fname)
             except:
                 print(f"Could not read the file {fname}.")
             dest = train_f if rand.random() > args.valid_percent else valid_f
+            if info.samplerate != 16_000:
+                print(f"Resampling {fname}.")
+                out_fname = fname.replace(".wav", "_resampled.wav")
+                subprocess.run(["ffmpeg", "-i", fname, "-ac", "1", "-ar", "16000", out_fname])
+                fname = out_fname
+                info = soundfile.info(fname)
             print(
-                "{}\t{}".format(os.path.relpath(file_path, dir_path), frames), file=dest
+                "{}\t{}".format(os.path.relpath(file_path, dir_path), info.frames), file=dest
             )
     if valid_f is not None:
         valid_f.close()

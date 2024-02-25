@@ -7,8 +7,8 @@ common:
   tensorboard_logdir: tb
 
 checkpoint:
-  save_interval: 5
-  save_interval_updates: 25000
+  save_interval: 1
+  save_interval_updates: 1000
   keep_interval_updates: 3
   no_epoch_checkpoints: false 
   keep_last_epochs: 3
@@ -18,8 +18,8 @@ checkpoint:
 task:
   _name: audio_pretraining
   data: ???
-  max_sample_size: 320000
-  min_sample_size: 32000
+  max_sample_size: 480000
+  min_sample_size: 1600
   normalize: true
 
 dataset:
