@@ -17,7 +17,7 @@ pip install --editable ./
 ### Prepare the data
 
 ```shell
-python fairseq/examples/wav2vec/wav2vec_manifest.py $AUDIO_FOLDER --dest prepared --ext wav --valid-percent 0.1
+python src/mms/manifest.py $AUDIO_FOLDER --dest prepared --ext wav --valid-percent 0.1
 ```
 
 ## data2vec
