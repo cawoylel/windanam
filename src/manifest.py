@@ -78,11 +78,12 @@ def main(args):
                 print(f"Could not read the file {fname}.")
             dest = train_f if rand.random() > args.valid_percent else valid_f
             if info.samplerate != 16_000:
-                print(f"Resampling {fname}.")
-                out_fname = fname.replace(".wav", "_resampled.wav")
-                subprocess.run(["ffmpeg", "-i", fname, "-ac", "1", "-ar", "16000", out_fname])
-                fname = out_fname
-                info = soundfile.info(fname)
+                print(f"You will need to resample {fname} because its sample rate is {info.samplerate}")
+                # out_fname = fname.replace(".wav", "_resampled.wav")
+                # subprocess.run(["ffmpeg", "-i", fname, "-ac", "1", "-ar", "16000", out_fname])
+                # fname = out_fname
+                # info = soundfile.info(fname)
+                continue
             print(
                 "{}\t{}".format(os.path.relpath(file_path, dir_path), info.frames), file=dest
             )
